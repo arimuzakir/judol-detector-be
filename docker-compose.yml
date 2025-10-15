@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  judol-detector-be:
+    image: ghcr.io/${REPOSITORY_OWNER}/judol-detector-be:latest
+    container_name: judol-detector-be
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - PYTHONUNBUFFERED=1
