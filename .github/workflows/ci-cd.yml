@@ -93,6 +93,12 @@ jobs:
               sudo chmod +x /usr/local/bin/docker-compose
             fi
 
+            echo "🚀 Start docker"
+            sudo systemctl start docker || true
+
+            echo "🔐 Login ke GHCR..."
+            echo "${{ secrets.GHCR_TOKEN }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
             echo "📦 Pull image terbaru..."
             docker pull ghcr.io/${{ github.repository_owner }}/judol-detector-be:latest
 
