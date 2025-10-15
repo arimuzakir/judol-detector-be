@@ -54,10 +54,10 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/judol-detector-be:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
           build-args: |
             PIP_NO_CACHE_DIR=1
+          # Matikan cache GHA (hemat space)
+          no-cache: true
 
   deploy:
     needs: build
