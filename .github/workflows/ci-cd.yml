@@ -14,11 +14,18 @@ jobs:
       - name: 🧾 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🧹 Cleanup Docker Space (optional but recommended)
+      - name: 🧹 Cleanup disk space aggressively
         run: |
+          echo "== Sebelum cleanup =="
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
           docker system prune -af || true
           docker builder prune -af || true
-          echo "🧽 Docker space cleaned"
+          echo "== Sesudah cleanup =="
+          df -h
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v5
