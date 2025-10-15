@@ -9,44 +9,58 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repository
+      - name: 🧾 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: 🧹 Cleanup Docker Space (optional but recommended)
+        run: |
+          docker system prune -af || true
+          docker builder prune -af || true
+          echo "🧽 Docker space cleaned"
+
+      - name: 🐍 Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - name: Install dependencies
+      - name: 📦 Install Dependencies (for sanity check)
         run: |
+          pip install --upgrade pip
           pip install -r requirements.txt
-          echo "✅ Dependencies installed"
+          echo "✅ Dependencies installed successfully"
 
-      - name: Test Flask App (lint check)
+      - name: 🔍 Test Flask App Syntax
         run: |
           python -m py_compile app/app.py || exit 1
           echo "✅ App compiled successfully"
 
-      - name: Login ke GHCR
+      - name: 🔑 Login ke GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Build dan Push Docker Image
+      - name: 🏗️ Build dan Push Docker Image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/judol-detector-be:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          # Hindari cache layer berlebihan
+          build-args: |
+            PIP_NO_CACHE_DIR=1
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
-      - name: Deploy ke Server (via SSH)
+      - name: 🚀 Deploy ke Server (via SSH)
         uses: appleboy/ssh-action@v1.1.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -55,33 +69,27 @@ jobs:
           script: |
             echo "🚀 Mulai proses deploy di server $(hostname)"
 
-            # === Pastikan Docker terinstall ===
-            if ! command -v docker &> /dev/null
-            then
-              echo "🐋 Docker belum terinstall, menginstall..."
+            if ! command -v docker &> /dev/null; then
+              echo "🐋 Install Docker..."
               curl -fsSL https://get.docker.com | sudo sh
               sudo usermod -aG docker $USER
-              echo "✅ Docker berhasil diinstall"
-            else
-              echo "✅ Docker sudah terinstall"
             fi
 
-            # === Pastikan Docker Compose juga terinstall ===
-            if ! command -v docker-compose &> /dev/null
-            then
-              echo "🧩 Docker Compose belum terinstall, menginstall..."
+            if ! command -v docker-compose &> /dev/null; then
+              echo "🧩 Install Docker Compose..."
               sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
                 -o /usr/local/bin/docker-compose
               sudo chmod +x /usr/local/bin/docker-compose
-              echo "✅ Docker Compose berhasil diinstall"
-            else
-              echo "✅ Docker Compose sudah terinstall"
             fi
 
-            # === Pull dan jalankan container terbaru ===
+            echo "📦 Pull image terbaru..."
             docker pull ghcr.io/${{ github.repository_owner }}/judol-detector-be:latest
+
+            echo "🛑 Stop container lama..."
             docker stop judol-detector-be || true
             docker rm judol-detector-be || true
+
+            echo "▶️ Jalankan container baru..."
             docker run -d \
               --name judol-detector-be \
               -p 8080:8080 \
