@@ -12,7 +12,7 @@ CORS(app)
 MODEL_PATH = os.path.abspath("rnn_model.h5")
 model = tf.keras.models.load_model(MODEL_PATH)
 
-os.environ["PATH"] += os.pathsep + r"C:\ffmpeg\bin"
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
 modelWhisper = whisper.load_model("base")
 
 # ====== Load tokenizer ======
