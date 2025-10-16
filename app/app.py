@@ -9,14 +9,14 @@ app = Flask(__name__)
 CORS(app)
 
 # ====== Load model ======
-MODEL_PATH = os.path.abspath("rnn_model.h5")
+MODEL_PATH = os.path.abspath("app/rnn_model.h5")
 model = tf.keras.models.load_model(MODEL_PATH)
 
 os.environ["PATH"] += os.pathsep + r"C:\ffmpeg\bin"
 modelWhisper = whisper.load_model("base")
 
 # ====== Load tokenizer ======
-TOKENIZER_PATH = os.path.abspath("tokenizer.pkl")
+TOKENIZER_PATH = os.path.abspath("app/tokenizer.pkl")
 with open(TOKENIZER_PATH, 'rb') as f:
     tokenizer = pickle.load(f)
 
