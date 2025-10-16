@@ -18,7 +18,7 @@ COPY app/* ./
 COPY rnn_model.h5 .
 COPY tokenizer.pkl .
 
-EXPOSE 8080
+EXPOSE 5000
 
 # ✅ Jalankan app.py langsung dari root /app
 CMD ["python", "app.py"]
