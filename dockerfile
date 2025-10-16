@@ -21,4 +21,4 @@ COPY tokenizer.pkl .
 EXPOSE 8080
 
 # ✅ Jalankan app.py langsung dari root /app
-CMD ["python", "app.py"]
+CMD ["python", "app/app.py"]
