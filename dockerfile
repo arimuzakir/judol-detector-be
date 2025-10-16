@@ -14,6 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy seluruh source code Flask app
 COPY app ./app
+COPY rnn_model.h5 .
+COPY tokenizer.pkl .
 
 # Expose port Flask
 EXPOSE 8080
