@@ -1,24 +1,24 @@
-# Gunakan Python versi spesifik
 FROM python:3.11.2-slim
 
 WORKDIR /app
 
-# Install system dependencies untuk ffmpeg, Whisper, EasyOCR, dll
+# Install dependencies sistem
 RUN apt-get update && apt-get install -y \
     ffmpeg libsm6 libxext6 git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements dan install dependency Python
+# Copy dependencies Python
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy seluruh source code Flask app
-COPY app ./app
+# ✅ Copy semua file Flask langsung ke /app
+COPY app/* ./
+
+# ✅ Copy model dan tokenizer ke /app juga
 COPY rnn_model.h5 .
 COPY tokenizer.pkl .
 
-# Expose port Flask
 EXPOSE 8080
 
-# Jalankan aplikasi
-CMD ["python", "app/app.py"]
+# ✅ Jalankan app.py langsung dari root /app
+CMD ["python", "app.py"]
