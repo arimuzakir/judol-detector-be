@@ -112,4 +112,4 @@ jobs:
               -p 8080:8080 \
               ghcr.io/${{ github.repository_owner }}/judol-detector-be:latest
 
-            echo "✅ Deployment selesai!"
+            echo "✅✅ Deployment selesai!"
